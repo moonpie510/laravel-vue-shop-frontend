@@ -2,7 +2,7 @@
 export default {
   name: "Index",
   mounted() {
-    $(document).trigger('init');
+    $(document).trigger('changed');
     this.getProducts();
     this.getFilterList();
   },
@@ -12,17 +12,55 @@ export default {
       products: [],
       popupProduct: null,
       filterList: [],
+      categories: [],
+      tags: [],
+      colors: [],
+      prices: [],
     }
   },
 
   methods: {
+    filterProducts() {
+      let prices = $('#priceRange').val();
+      this.prices = prices.replace(/[\s+]|[$]/g, '').split('-');
+
+      this.axios.post('http://localhost:8000/api/products', {
+        'categories': this.categories,
+        'tags': this.tags,
+        'colors': this.colors,
+        'prices': this.prices
+      })
+          .then(res => {
+            this.products = res.data.data;
+          })
+          .finally(v => {
+            $(document).trigger('changed');
+          })
+    },
+
+    addColor(id) {
+      if (!this.colors.includes(id)) {
+        this.colors.push(id);
+      } else {
+        this.colors = this.colors.filter(item => item !== id);
+      }
+    },
+
+    addTag(id) {
+      if (!this.tags.includes(id)) {
+        this.tags.push(id);
+      } else {
+        this.tags = this.tags.filter(item => item !== id);
+      }
+    },
+
     getProducts() {
-      this.axios.get('http://localhost:8000/api/products')
+      this.axios.post('http://localhost:8000/api/products', {})
           .then(res => {
             this.products = res.data.data;
           })
       .finally(v => {
-        $(document).trigger('init');
+        $(document).trigger('changed');
       })
     },
 
@@ -33,7 +71,7 @@ export default {
             this.popupProduct = res.data.data;
           })
           .finally(v => {
-            $(document).trigger('init');
+            $(document).trigger('changed');
           })
     },
 
@@ -57,7 +95,7 @@ export default {
             }
           })
           .finally(v => {
-            $(document).trigger('init');
+            $(document).trigger('changed');
           })
     }
   }
@@ -167,7 +205,7 @@ export default {
                     <div class="checkbox-item">
                       <form>
                         <div v-for="category in filterList.categories" class="form-group">
-                          <input type="checkbox" :id="category.id">
+                          <input v-model="categories" :value="category.id" type="checkbox" :id="category.id">
                           <label :for="category.id">{{category.title}}</label>
                         </div>
                       </form>
@@ -177,7 +215,7 @@ export default {
                     <h4>Color Option </h4>
                     <ul class="color-option">
                       <li v-for="color in filterList.colors">
-                        <a href="#0" class="color-option-single" :style="`background: ${color.title}`">
+                        <a @click.prevent="addColor(color.id)" href="#0" class="color-option-single" :style="`background: ${color.title}`">
                           <span>{{color.title}}</span>
                         </a>
                       </li>
@@ -187,16 +225,18 @@ export default {
                     <h4>Filter By Price</h4>
                     <div class="slider-box">
                       <div id="price-range" class="slider"></div>
-                      <div class="output-price"> <label for="priceRange">Price:</label> <input
-                          type="text" id="priceRange" readonly> </div> <button class="filterbtn"
-                                                                               type="submit"> Filter </button>
+                      <div class="output-price">
+                        <label for="priceRange">Price:</label>
+                        <input type="text" id="priceRange" readonly>
+                      </div>
+                      <button @click.prevent="filterProducts()" class="filterbtn" type="submit"> Filter </button>
                     </div>
                   </div>
                   <div class="single-sidebar-box mt-30 wow fadeInUp animated pb-0 border-bottom-0 ">
                     <h4>Tags </h4>
                     <ul class="popular-tag">
                       <li v-for="tag in filterList.tags">
-                        <a href="#0">{{tag.title}}</a>
+                        <a @click.prevent="addTag(tag.id)" href="#0">{{tag.title}}</a>
                       </li>
                     </ul>
                   </div>
