@@ -290,49 +290,25 @@ export default {
                               <div v-if="popupProduct" class="container">
                                 <div class="row justify-content-between align-items-center">
                                   <div class="col-lg-6">
-                                    <div class="quick-view__left-content">
+                                    <div class="quick-view__left-content" v-if="popupProduct.product_images.length > 1">
                                       <div class="tabs">
                                         <div class="popup-product-thumb-box">
                                           <ul>
-                                            <li
-                                                class="tab-nav popup-product-thumb">
-                                              <a href="#tabb1">
-                                                <img :src="popupProduct.image_url"
-                                                     alt="" /> </a> </li>
-                                            <li
-                                                class="tab-nav popup-product-thumb ">
-                                              <a href="#tabb2">
-                                                <img src="/src/assets/images/shop/products-v6-img6.jpg"
-                                                     alt="" /> </a> </li>
-                                            <li
-                                                class="tab-nav popup-product-thumb ">
-                                              <a href="#tabb3">
-                                                <img src="/src/assets/images/shop/products-v6-img7.jpg"
-                                                     alt="" /> </a> </li>
+                                            <li v-for="productImage in popupProduct.product_images" class="tab-nav popup-product-thumb">
+                                              <a :href="`#tabb${productImage.id}`">
+                                                <img :src="productImage.url" alt="" />
+                                              </a>
+                                            </li>
                                           </ul>
                                         </div>
                                         <div class="popup-product-main-image-box">
-                                          <div id="tabb1"
-                                               class="tab-item popup-product-image">
+                                          <div :id="`tabb${productImage.id}`" v-for="productImage in popupProduct.product_images" class="tab-item popup-product-image">
                                             <div
                                                 class="popup-product-single-image">
-                                              <img :src="popupProduct.image_url"
+                                              <img :src="productImage.url"
                                                    alt="" /> </div>
                                           </div>
-                                          <div id="tabb2"
-                                               class="tab-item popup-product-image">
-                                            <div
-                                                class="popup-product-single-image">
-                                              <img src="/src/assets/images/shop/products-v6-img6.jpg"
-                                                   alt="" /> </div>
-                                          </div>
-                                          <div id="tabb3"
-                                               class="tab-item popup-product-image">
-                                            <div
-                                                class="popup-product-single-image">
-                                              <img src="/src/assets/images/shop/products-v6-img7.jpg"
-                                                   alt="" /> </div>
-                                          </div> <button class="prev"> <i
+                                          <button class="prev"> <i
                                             class="flaticon-back"></i>
                                         </button> <button class="next"> <i
                                             class="flaticon-next"></i>
