@@ -21,6 +21,38 @@ export default {
   },
 
   methods: {
+    addToCart(id, isSingle) {
+      let qty = isSingle ? 1 : $('.qtyValue').val();
+
+      let cart = localStorage.getItem('cart');
+      $('.qtyValue').val(1);
+
+      let newProduct = [
+        {
+          'id': id,
+          'qty': qty
+        }
+      ];
+
+      if (!cart) {
+        localStorage.setItem('cart', JSON.stringify(newProduct));
+      } else {
+        cart = JSON.parse(cart);
+        cart.forEach(productInCart => {
+
+          if (productInCart.id === id) {
+            productInCart.qty = Number(productInCart.qty) + Number(qty);
+            newProduct = null;
+          }
+        });
+
+        Array.prototype.push.apply(cart, newProduct);
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+
+    },
+
     filterProducts() {
       let prices = $('#priceRange').val();
       this.prices = prices.replace(/[\s+]|[$]/g, '').split('-');
@@ -55,7 +87,6 @@ export default {
           .then(res => {
             this.products = res.data.data;
             this.pagination = res.data.meta;
-            console.log(this.pagination);
           })
       .finally(v => {
         $(document).trigger('changed');
@@ -302,10 +333,10 @@ export default {
                                 src="/src/assets/images/home-three/productss2-hover-1.png"
                                 alt="" class="hover-img" />
                             </a>
-                              <div class="products-grid-one__badge-box"> <span
-                                  class="bg_base badge new ">New</span>
-                              </div> <a href="cart.html" class="addcart btn--primary style2">
-                                Add To Cart </a>
+                              <div class="products-grid-one__badge-box">
+                                <span class="bg_base badge new ">New</span>
+                              </div>
+                              <a @click.prevent="addToCart(product.id, true)" href="cart.html" class="addcart btn--primary style2">Add To Cart </a>
                               <div class="products-grid__usefull-links">
                                 <ul>
                                   <li><a href="wishlist.html"> <i class="flaticon-heart">
@@ -384,15 +415,15 @@ export default {
                                         <h6>Qty:</h6>
                                         <div class="button-group">
                                           <div class="qtySelector text-center">
-                                                                                    <span class="decreaseQty"><i
-                                                                                        class="flaticon-minus"></i>
-                                                                                    </span> <input type="number"
-                                                                                                   class="qtyValue" value="1" />
-                                            <span class="increaseQty"> <i
-                                                class="flaticon-plus"></i>
-                                                                                    </span> </div>
-                                          <button class="btn--primary "> Add to
-                                            Cart </button>
+                                            <span class="decreaseQty">
+                                              <i class="flaticon-minus"></i>
+                                            </span>
+                                            <input type="number" class="qtyValue" value="1" />
+                                            <span class="increaseQty">
+                                              <i class="flaticon-plus"></i>
+                                            </span>
+                                          </div>
+                                          <button @click.prevent="addToCart(product.id)" class="btn--primary "> Add to Cart </button>
                                         </div>
                                       </div>
                                       <div class="payment-method"> <a href="#0"> <img
