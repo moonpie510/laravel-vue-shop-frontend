@@ -411,10 +411,14 @@ export default {
                                 </div>
                               </div>
                             </div>
-                            <div class="products-three-single-content text-center"> <span>{{product.category.title}}</span>
-                              <h5><a href="shop-details-3.html"> {{product.title}} </a>
+                            <div class="products-three-single-content text-center">
+                              <span>{{product.category.title}}</span>
+                              <h5>
+                                <router-link :to="{name: 'products.show', params: {id: product.id}}"> {{product.title}} </router-link>
                               </h5>
-                              <p><del>${{product.price * 1.2}}</del> ${{product.price}}</p>
+                              <p>
+                                <del>${{product.price * 1.2}}</del> ${{product.price}}
+                              </p>
                             </div>
                           </div>
                         </div>
